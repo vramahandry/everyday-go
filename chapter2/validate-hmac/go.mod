@@ -1,4 +1,4 @@
-module github.com/vramahandry/everyday-go/chapter2/firstgo
+module github.com/vramahandry/everyday-go/chapter2/validate-hmac
 
 go 1.23.1
 
