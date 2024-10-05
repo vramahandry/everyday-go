@@ -9,8 +9,12 @@ import (
 	"time"
 )
 
+type person struct {
+	Name string `json:"name"`
+}
 type people struct {
-	Number int `json:"number"`
+	Number int      `json:"number"`
+	Person []person `json:"people"`
 }
 
 func getAstros(apiURL string) (people, error) {
@@ -50,5 +54,9 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("%d people found in space.\n", people.Number)
+
+	for _, p := range people.Person {
+		fmt.Printf("Let's wave to: %s\n", p.Name)
+	}
 
 }
