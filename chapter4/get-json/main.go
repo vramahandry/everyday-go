@@ -3,26 +3,41 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"time"
 )
 
 type people struct {
-	Number int `json:number`
+	Number int `json:"number"`
 }
 
 func main() {
 
-	text := `{"people": [{"craft": "ISS", "name": "Sergey Rizhikov"}, {"craft": "ISS",
-	"name": "Andrey Borisenko"}, {"craft": "ISS", "name": "Shane Kimbrough"}, {"craft":
-	"ISS", "name": "Oleg Novitskiy"}, {"craft": "ISS", "name": "Thomas Pesquet"}, {"craft":
-	"ISS", "name": "Peggy Whitson"}], "message": "success", "number": 6}`
-	textBytes := []byte(text)
+	url := "http://api.open-notify.org/astross.json"
+	spaceClient := http.Client{
+		Timeout: time.Second * 2, // Timeout after 2 seconds
+	}
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+
+	req.Header.Set("User-Agent", "spacecount-tutorial")
+	res, err := spaceClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	p := people{}
-	err := json.Unmarshal(textBytes, &p)
+	err = json.Unmarshal(body, &p)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
 	fmt.Println(p.Number)
-
 }
