@@ -15,7 +15,7 @@ type people struct {
 
 func main() {
 
-	url := "http://api.open-notify.org/astross.json"
+	url := "http://api.open-notify.org/astros.json"
 	spaceClient := http.Client{
 		Timeout: time.Second * 2, // Timeout after 2 seconds
 	}
