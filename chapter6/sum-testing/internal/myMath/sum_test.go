@@ -1,4 +1,4 @@
-package main
+package myMath
 
 import "testing"
 
@@ -14,7 +14,7 @@ func Test_sum(t *testing.T) {
 		{5, 2, 7},
 	}
 	for _, table := range tables {
-		got := sum(table.x, table.y)
+		got := Sum(table.x, table.y)
 		if got != table.want {
 			t.Errorf("Sum of (%d+%d) was incorrect, got: %d, want: %d.",
 				table.x, table.y, got, table.want)
