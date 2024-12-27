@@ -19,24 +19,37 @@ type testWebRequest struct {
 // }
 
 func (testWebRequest) FetchBytes(url string) ([]byte, error) {
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	// mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 	w.WriteHeader(http.StatusOK)
+	// 	w.Write([]byte(`{"number": 2}`))
+	// }))
+	// defer mockServer.Close()
+
+	// req, err := http.NewRequest(http.MethodGet, mockServer.URL, nil)
+	// if err != nil {
+	// 	return []byte{}, err
+	// }
+	// req.Header.Set("User-Agent", "test")
+	// res, err := http.DefaultClient.Do(req)
+	// if err != nil {
+	// 	return []byte{}, err
+	// }
+
+	// defer res.Body.Close()
+
+	// body, err := io.ReadAll(res.Body)
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"number": 2}`))
-	}))
-	defer mockServer.Close()
-
-	req, err := http.NewRequest(http.MethodGet, mockServer.URL, nil)
-	if err != nil {
-		return []byte{}, err
-	}
-	req.Header.Set("User-Agent", "test")
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return []byte{}, err
 	}
 
-	defer res.Body.Close()
+	req := httptest.NewRequest(http.MethodGet, "/foo", nil)
+	w := httptest.NewRecorder()
+	handler(w, req)
 
+	res := w.Result()
 	body, err := io.ReadAll(res.Body)
 
 	if err != nil {
