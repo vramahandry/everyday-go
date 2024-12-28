@@ -1,21 +1,25 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
 	var uri string
+	var timeout time.Duration
 	flag.StringVar(&uri, "uri", "", "uri to fetch")
+	flag.DurationVar(&timeout, "timeout", time.Second*5, "timeout for HTTP client")
 	flag.Parse()
 	titleCh := make(chan string)
 	errorCh := make(chan error)
-	go titleOf(uri, titleCh, errorCh)
+	go titleOf(uri, timeout, titleCh, errorCh)
 	select {
 	case title := <-titleCh:
 		fmt.Printf("Title: %s\n", title)
@@ -25,8 +29,10 @@ func main() {
 	}
 }
 
-func titleOf(uri string, titleCh chan string, errCh chan error) {
-	req, err := http.NewRequest(http.MethodGet, uri, nil)
+func titleOf(uri string, timeout time.Duration, titleCh chan string, errCh chan error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		errCh <- err
 		return
