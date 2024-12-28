@@ -46,28 +46,26 @@ func scrape(url string, sr *ScrapeRun) {
 }
 
 func main() {
-	url1 := "https://inlets.dev/"
-	url2 := "https://openfaas.com/"
-	url3 := "https://openfas.com/"
+
+	urls := []string{"https://inlets.dev/", "https://openfaas.com/", "https://openfas.com/"}
 	sr := ScrapeRun{
 		Lock:    &sync.Mutex{},
 		Results: make(map[string]ScrapeResult),
 	}
 	wg := sync.WaitGroup{}
-	wg.Add(3)
-	go func(u string) {
-		defer wg.Done()
-		scrape(url1, &sr)
-	}(url1)
-	go func(u string) {
-		defer wg.Done()
-		scrape(url2, &sr)
-	}(url2)
-	go func(u string) {
-		defer wg.Done()
-		scrape(url3, &sr)
-	}(url3)
+
+	for _, url := range urls {
+		wg.Add(1)
+		u := url
+		go func(u string) {
+			defer wg.Done()
+			scrape(u, &sr)
+
+		}(u)
+
+	}
 	wg.Wait()
+
 	for k, v := range sr.Results {
 		if v.Error != nil {
 			fmt.Printf("- %s = error: %s\n", k, v.Error.Error())
